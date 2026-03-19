@@ -7,6 +7,8 @@
 #include "proc.h"
 #include "vm.h"
 
+#include "procinfo.h"
+
 uint64
 sys_exit(void)
 {
@@ -106,4 +108,55 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+uint64
+sys_procinfo(void)
+{
+  int pid;
+  uint64 uaddr;
+  struct proc *p;
+  struct procinfo info;
+  int found = 0;
+
+  // Lấy tham số từ user
+  if(argint(0, &pid) < 0)
+    return -1;
+  if(argaddr(1, &uaddr) < 0)
+    return -1;
+
+  // Kiểm tra pid
+  if(pid <= 0)
+    return -1;
+
+  // Duyệt bảng process
+  for(p = proc; p < &proc[NPROC]; p++){
+    acquire(&p->lock);
+    
+    // Kiểm tra pid và process có tồn tại
+    if(p->pid == pid && p->state != UNUSED){
+      // Copy data vào struct kernel
+      info.pid = p->pid;
+      info.ppid = p->parent ? p->parent->pid : 0;
+      info.state = p->state;
+      info.sz = p->sz;
+      safestrcpy(info.name, p->name, sizeof(info.name));
+      
+      found = 1;
+      release(&p->lock);
+      break;
+    }
+    
+    release(&p->lock);
+  }
+
+  // Ko tìm thấy
+  if(!found)
+    return -1;
+
+  // Copy data về user space
+  if(copyout(myproc()->pagetable, uaddr, (char *)&info, sizeof(info)) < 0)
+    return -1;
+
+  return 0;
 }
