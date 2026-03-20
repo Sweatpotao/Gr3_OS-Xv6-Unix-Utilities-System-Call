@@ -155,6 +155,7 @@ static char *syscallnames[] = {
 [SYS_mkdir]   "mkdir",
 [SYS_close]   "close",
 [SYS_trace]   "trace",
+[SYS_procinfo] "procinfo",
 };
 
 void
