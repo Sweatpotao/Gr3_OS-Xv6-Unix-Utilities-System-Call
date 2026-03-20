@@ -132,7 +132,7 @@ static uint64 (*syscalls[])(void) = {
 };
 
 // name of syscalls
-static char *syscallnames[] = {
+static char *syscallnames[] __attribute__((unused))  = {
 [SYS_fork]    "fork",
 [SYS_exit]    "exit",
 [SYS_wait]    "wait",
