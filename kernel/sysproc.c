@@ -8,6 +8,8 @@
 #include "vm.h"
 #include "procinfo.h"
 
+extern struct proc proc[];
+
 uint64
 sys_exit(void)
 {
