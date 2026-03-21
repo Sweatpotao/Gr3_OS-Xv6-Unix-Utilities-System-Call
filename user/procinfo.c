@@ -3,6 +3,18 @@
 #include "user/user.h"
 #include "kernel/procinfo.h"
 
+char*
+statename(int state)
+{
+  switch(state){
+    case 1: return "SLEEPING";
+    case 2: return "RUNNABLE";
+    case 3: return "RUNNING";
+    case 4: return "ZOMBIE";
+    default: return "UNKNOWN";
+  }
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -16,15 +28,15 @@ main(int argc, char *argv[])
   int pid = atoi(argv[1]);
 
   if(procinfo(pid, &info) < 0){
-    fprintf(2, "procinfo: failed to get info\n");
+    fprintf(2, "procinfo: process %d not found\n", pid);
     exit(1);
   }
 
-  printf("PID: %d\n", info.pid);
-  printf("Parent PID: %d\n", info.ppid);
-  printf("State: %d\n", info.state);
-  printf("Size: %lu bytes\n", info.sz);
-  printf("Name: %s\n", info.name);
+  printf("Process : %s\n", info.name);
+  printf("PID     : %d\n", info.pid);
+  printf("PPID    : %d\n", info.ppid);
+  printf("State   : %s\n", statename(info.state));
+  printf("Memory  : %lu bytes\n", info.sz);
 
   exit(0);
 }
