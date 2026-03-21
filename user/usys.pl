@@ -43,4 +43,4 @@ entry("sbrk");
 entry("pause");
 entry("uptime");
 entry("trace");
-entry("procinfo")
+entry("procinfo");
